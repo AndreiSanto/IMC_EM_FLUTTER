@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -23,6 +25,26 @@ class _HomeState extends State<Home> {
       _infoText = "Informe seus dados!";
     });
   }
+
+  bool validacao(String validar) {
+    int i;
+    int cont = 0;
+    for (i = 0; i < validar.length; i++) {
+      if (validar[i].contains('.')) {
+        cont = cont + 1;
+      }
+    }
+    if (cont >= 2) {
+      return true;
+    } else {
+      return false;
+    }
+    
+  }
+  double validarValor(String valor){
+      double valo = double.parse(valor);
+      return valo;
+    }
 
   void _calculate() {
     setState(() {
@@ -71,20 +93,29 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               Icon(Icons.person_outline, size: 120.0, color: Colors.green),
               TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: "Peso(kg)",
-                  labelStyle: TextStyle(color: Colors.green),
-                ),
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.green, fontSize: 25.0),
-                controller: weightController,
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return "Digite seu Peso";
-                  }
-                },
-              ),
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: "Peso(kg)",
+                    labelStyle: TextStyle(color: Colors.green),
+                  ),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.green, fontSize: 25.0),
+                  controller: weightController,
+                  // maxLength: 4,
+                  validator: (value) {
+                    List<String> teste = value.split(".");
+                    // double valor = double.parse(value);
+                    if (value.isEmpty) {
+                      return "Digite seu Peso";
+                    } else if (teste[0].isEmpty || teste[0].contains('0')) {
+                      return "Valor invalido";
+                    } else if (validacao(value)) {
+                      return "Valor invalido";
+                    }else if(validarValor(value) < 0){
+                        return "Valor invalido";
+
+                    }
+                  }),
               TextFormField(
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
@@ -96,7 +127,7 @@ class _HomeState extends State<Home> {
                   controller: heightController,
                   validator: (value) {
                     if (value.isEmpty) {
-                      return "Digite seu Peso";
+                      return "Digite a sua Altura";
                     }
                   }),
               Padding(
@@ -105,7 +136,8 @@ class _HomeState extends State<Home> {
                   height: 50.0,
                   child: RaisedButton(
                     onPressed: () {
-                      if (_formKey.currentState.validate()) { //vai vericar se o formulario esta valido
+                      if (_formKey.currentState.validate()) {
+                        //vai vericar se o formulario esta valido
                         _calculate();
                       }
                     },
